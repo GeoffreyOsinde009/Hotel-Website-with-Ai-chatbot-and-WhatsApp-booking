@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Hotel Management Website</title>
+		<!-- font awesome cdn link -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<!-- swiper js cdn link -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+	<!-- custom css link -->
+	<link rel="stylesheet" href="style.css">
+
+	<style>
+		/* WhatsApp Floating Button */
+		.whatsapp-float {
+			position: fixed;
+			bottom: 30px;
+			right: 30px;
+			z-index: 9999;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+			gap: 10px;
+		}
+
+		.whatsapp-float a {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 60px;
+			height: 60px;
+			background: #25D366;
+			border-radius: 50%;
+			box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5);
+			text-decoration: none;
+			transition: all 0.3s ease;
+			animation: whatsapp-pulse 2s infinite;
+		}
+
+		.whatsapp-float a:hover {
+			transform: scale(1.1);
+			box-shadow: 0 6px 28px rgba(37, 211, 102, 0.7);
+			background: #20c05c;
+		}
+
+		.whatsapp-float a i {
+			color: #fff;
+			font-size: 2.8rem;
+		}
+
+		.whatsapp-tooltip {
+			background: #fff;
+			color: #333;
+			padding: 8px 14px;
+			border-radius: 20px;
+			font-size: 1.3rem;
+			font-weight: 600;
+			box-shadow: 0 3px 15px rgba(0,0,0,0.15);
+			white-space: nowrap;
+			opacity: 0;
+			transform: translateX(10px);
+			transition: all 0.3s ease;
+			pointer-events: none;
+		}
+
+		.whatsapp-float:hover .whatsapp-tooltip {
+			opacity: 1;
+			transform: translateX(0);
+		}
+
+		.whatsapp-float-row {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		@keyframes whatsapp-pulse {
+			0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6); }
+			70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+			100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+		}
+
+		/* Room Selection Container */
+		.room-selection-container {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			max-height: 400px;
+			overflow-y: auto;
+			padding: 10px;
+			border: 1px solid #ddd;
+			border-radius: 5px;
+			background-color: #fafafa;
+		}
+
+		.room-quantity-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 12px;
+			background-color: white;
+			border-radius: 8px;
+			border: 1px solid #e9ecef;
+			transition: all 0.2s ease;
+		}
+
+		.room-quantity-item:hover {
+			box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+			border-color: #007bff;
+		}
+
+		.room-info {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+		}
+
+		.room-name {
+			font-weight: 600;
+			color: #333;
+			font-size: 1.4rem;
+		}
+
+		.room-price {
+			color: #28a745;
+			font-weight: 500;
+			font-size: 1.2rem;
+		}
+
+		.quantity-controls {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.qty-btn {
+			width: 32px;
+			height: 32px;
+			border: none;
+			border-radius: 50%;
+			background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+			color: white;
+			font-size: 1.6rem;
+			font-weight: bold;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: all 0.2s ease;
+		}
+
+		.qty-btn:hover {
+			transform: scale(1.1);
+			box-shadow: 0 2px 6px rgba(0,123,255,0.3);
+		}
+
+		.qty-btn:active {
+			transform: scale(0.95);
+		}
+
+		.qty-minus {
+			background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+		}
+
+		.qty-minus:hover {
+			box-shadow: 0 2px 6px rgba(220,53,69,0.3);
+		}
+
+		.qty-input {
+			width: 50px;
+			height: 32px;
+			text-align: center;
+			border: 2px solid #007bff;
+			border-radius: 4px;
+			font-size: 1.4rem;
+			font-weight: bold;
+			color: #007bff;
+			background-color: #f8f9fa;
+		}
+
+		.qty-input:focus {
+			outline: none;
+			border-color: #0056b3;
+			box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+		}
+
+		/* Total Price Display */
+		.total-price-display {
+			font-size: 2rem;
+			font-weight: bold;
+			color: #007bff;
+			padding: 1rem;
+			border: 2px solid #007bff;
+			border-radius: 5px;
+			background-color: #f8f9fa;
+			text-align: center;
+		}
+
+		/* Selected Rooms List */
+		.selected-rooms-list {
+			border: 2px solid #28a745;
+			border-radius: 5px;
+			background-color: #f8fff8;
+			min-height: 60px;
+			padding: 1rem;
+			max-height: 200px;
+			overflow-y: auto;
+		}
+
+		.selected-rooms-list .no-rooms-selected {
+			color: #6c757d;
+			font-style: italic;
+			text-align: center;
+			margin: 1rem 0;
+		}
+
+		.selected-room-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 0.5rem;
+			margin-bottom: 0.5rem;
+			background-color: #e9f7e9;
+			border-radius: 3px;
+			border-left: 4px solid #28a745;
+		}
+
+		.selected-room-name {
+			font-weight: 600;
+			color: #155724;
+		}
+
+		.selected-room-price {
+			color: #28a745;
+			font-weight: bold;
+		}
+
+		.remove-room-btn {
+			background: none;
+			border: none;
+			color: #dc3545;
+			cursor: pointer;
+			font-size: 1.2rem;
+			padding: 0 0.5rem;
+			border-radius: 50%;
+			transition: background-color 0.2s;
+		}
+
+		.remove-room-btn:hover {
+			background-color: rgba(220, 53, 69, 0.1);
+		}
+
+		@media (max-width: 768px) {
+			.room-type-checkboxes {
+				grid-template-columns: 1fr;
+			}
+		}
+	</style>
+</head>
+<body>
+	<!--header section starts -->
+	<header class="header">
+		<a href="#" class="logo"> <i class="fas fa-hotel"></i>DUBAI HOTEL</a>
+		<nav class="navbar">
+		<a href="#home">home</a>
+		<a href="#about">about</a>
+		<a href="#rooms">rooms</a>
+		<a href="#services">services</a>
+		<a href="#gallery">gallery</a>
+		<a href="#review">review</a>
+		<a href="#faq">faq</a>
+		<a href="#" onclick="document.getElementById('chatToggleBtn').click(); return false;">chat</a>
+		<a href="admin.html">admin</a>
+		<a href="#reservation" class="btn"> booknow </a>
+		</nav>
+
+		 <div id="menu-btn" class="fas fa-bars"></div>
+	</header>
+	<!--header section end-->
+
+	<!--home section starts-->
+	<section class="home" id="home">
+		<div class="swiper home-slider">
+				<div class="swiper-wrapper">
+						<div class="swiper-slide slide" style="background: url(images/home-slide1.jpg) center/cover no-repeat;">
+								<div class="content">
+									<h3 class="fade-item">LUXURY LIVING</h3>
+										<h2 class="fade-item">Discover A Brand <br> Luxury hotel</h2>
+										<div class="button-group">
+									<a href="#rooms" class="btn fade-item"> OUR ROOMS </a>
+									<a href="#reservation" class="btn btn-outline fade-item"> BOOK NOW</a>
+										</div>
+									</div>
+								</div>
+                                <div class="swiper-slide slide" style="background: url(images/home-slide2.jpg) center/cover no-repeat;">
+								<div class="content">
+									<h3 class="fade-item">LUXURY LIVING</h3>
+										<h2 class="fade-item">Discover A Brand <br> Luxury hotel</h2>
+										<div class="button-group">
+											<a href="#rooms" class="btn fade-item"> OUR ROOMS </a>
+											<a href="#reservation" class="btn btn-outline fade-item"> BOOK NOW</a>
+										</div>
+									</div>
+								</div>
+								<div class="swiper-slide slide" style="background: url(images/home-slide3.jpg) center/cover no-repeat;">
+								<div class="content">
+									<h3 class="fade-item">LUXURY LIVING</h3>
+										<h2 class="fade-item">Discover A Brand <br> Luxury hotel</h2>
+										<div class="button-group">
+											<a href="#rooms" class="btn fade-item"> OUR ROOMS </a>
+											<a href="#reservation" class="btn btn-outline fade-item"> BOOK NOW</a>
+										</div>
+									</div>
+								</div>
+                           </div>
+                           <div class="swiper-button-next"></div>
+                            <div class="swiper-button-prev"></div>
+						</div>
+	</section>
+	<!--home section ends-->
+
+	<!-- about section starts -->
+	 <section class="about" id="about">
+    <h1 class="heading">about <span>us</span></h1>
+
+    <div class="row">
+
+        <div class="image">
+            <img src="images/about.jpg" alt="About Dubai Hotel">
+        </div>
+
+        <div class="content">
+            <h3>Welcome to Dubai Hotel</h3>
+            <p class="tagline">Global Elegance, Exceptional Hospitality &amp; Sustainable Luxury.</p>
+            <p>Discover the pinnacle of luxury and sophistication at <strong>Dubai Hotel</strong>, where every detail is crafted 
+            to perfection. From the moment you arrive, our mission is to provide an experience that blends 
+            unparalleled elegance with personalized service.</p>
+
+            <div class="philosophy">
+
+                <div class="philosophy-item">
+                    <i class="fas fa-globe"></i>
+                    <h4>Global Elegance</h4>
+                    <p>Dubai Hotel blends timeless design with global influences to create an experience that 
+                    transcends borders.</p>
+                </div>
+
+                <div class="philosophy-item">
+                    <i class="fas fa-heart"></i>
+                    <h4>Exceptional Hospitality</h4>
+                    <p>Our dedicated team is committed to providing exceptional hospitality and ensuring every guest feels welcomed and valued.</p>
+                </div>
+
+				<div class="philosophy-item">
+                    <i class="fas fa-leaf"></i>
+                    <h4>Sustainable Luxury</h4>
+                    <p>Experience indulgence with a conscience. We prioritize eco-friendly practices in all aspects of our operations.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+	 <!-- about section ends -->
+
+    <!-- rooms section starts -->
+<section class="room" id="rooms">
+
+    <h1 class="heading">our <span>rooms</span></h1>
+
+    <div class="swiper room-slider">
+
+        <div class="swiper-wrapper">
+
+            <div class="swiper-slide slide">
+                <div class="image">
+                    <span class="price">ksh 4,500/night</span>
+                    <img src="images/room-1.jpg" alt="">
+                </div>
+                <div class="content">
+                    <h3>Standard Room</h3>
+                    <p>Stay in comfort and style with our exclusive room. Perfect for relaxation and convenience.</p>
+                    <div class="stars">
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star-half-alt"></i>
+</div>
+<a href="#reservation" class="btn room-book-btn">book now</a>
+                </div>
+            </div>
+
+            <div class="swiper-slide slide">
+                <div class="image">
+                    <span class="price">ksh 7,000/night</span>
+                    <img src="images/room-1.jpg" alt="">
+                </div>
+                <div class="content">
+                    <h3>Deluxe Room</h3>
+                    <p>Stay in comfort and style with our exclusive room. Perfect for relaxation and convenience.</p>
+                    <div class="stars">
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star-half-alt"></i>
+</div>
+<a href="#reservation" class="btn">book now</a>
+                </div>
+            </div>
+
+            <div class="swiper-slide slide">
+                <div class="image">
+                    <span class="price">ksh 12,000/night</span>
+                    <img src="images/room-2.jpg" alt="">
+                </div>
+                <div class="content">
+                    <h3>Suite room</h3>
+                    <p>Stay in comfort and style with our exclusive room. Perfect for relaxation and convenience.</p>
+                    <div class="stars">
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star-half-alt"></i>
+</div>
+<a href="#reservation" class="btn">book now</a>
+                </div>
+            </div>
+
+            <div class="swiper-slide slide">
+                <div class="image">
+                    <span class="price">ksh 35,000/night</span>
+                    <img src="images/room-3.jpg" alt="">
+                </div>
+                <div class="content">
+                    <h3> Presidential Suite</h3>
+                    <p>Stay in comfort and style with our exclusive room. Perfect for relaxation and convenience.</p>
+                    <div class="stars">
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star-half-alt"></i>
+</div>
+<a href="#reservation" class="btn">book now</a>
+                </div>
+            </div>
+
+            <div class="swiper-slide slide">
+                <div class="image">
+                    <span class="price">ksh 9,000/night</span>
+                    <img src="images/room-4.jpg" alt="">
+                </div>
+                <div class="content">
+                    <h3>Ocean View Room</h3>
+                    <p>Stay in comfort and style with our exclusive room. Perfect for relaxation and convenience.</p>
+                    <div class="stars">
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star-half-alt"></i>
+</div>
+<a href="#reservation" class="btn">book now</a>
+                </div>
+            </div>
+
+            <div class="swiper-slide slide">
+                <div class="image">
+                    <span class="price">ksh 6,500/night</span>
+                    <img src="images/room-5.jpg" alt="">
+                </div>
+                <div class="content">
+                    <h3>City View Room</h3>
+                    <p>Stay in comfort and style with our exclusive room. Perfect for relaxation and convenience.</p>
+                    <div class="stars">
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star-half-alt"></i>
+</div>
+<a href="#reservation" class="btn">book now</a>
+                </div>
+            </div>
+
+            <div class="swiper-slide slide">
+                <div class="image">
+                    <span class="price">ksh 10,500/night</span>
+                    <img src="images/room-6.jpg" alt="">
+                </div>
+                <div class="content">
+                    <h3>Family Room</h3>
+                    <p>Stay in comfort and style with our exclusive room. Perfect for relaxation and convenience.</p>
+                    <div class="stars">
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star-half-alt"></i>
+</div>
+<a href="#reservation" class="btn">book now</a>
+                </div>
+            </div>
+
+            <div class="swiper-slide slide">
+                <div class="image">
+                    <span class="price">ksh 8,500/night</span>
+                    <img src="images/room-1.jpg" alt="">
+                </div>
+                <div class="content">
+                    <h3>Executive Room</h3>
+                    <p>Stay in comfort and style with our exclusive room. Perfect for relaxation and convenience.</p>
+                    <div class="stars">
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star-half-alt"></i>
+         </div>
+<a href="#reservation" class="btn">book now</a>
+                </div>
+        </div>
+    </div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-pagination"></div>
+</div>
+</section>
+    <!-- rooms section ends -->
+
+
+    <!--services section starts -->
+    <section class="services" id="services">
+
+    <h1 class="heading"> our <span>services</span> </h1>
+
+    <div class="box-container">
+
+        <div class="box">
+            <i class="fas fa-swimming-pool"></i>
+            <h3>swimming pool</h3>
+            <p>Enjoy a refreshing swim in our luxurious swimming pool, surrounded by stunning views and elegant design.</p>
+            <a href="#" class="btn service-btn" data-service="swimming pool">Learn More</a>
+            </div>
+            
+        <div class="box">
+            <i class="fas fa-utensils"></i>
+            <h3>food & drinks</h3>
+            <p>Enjoy delicious meals in our elegant restaurant, featuring a wide variety of local and international cuisines.</p>
+            <a href="#" class="btn service-btn" data-service="food & drinks">Learn More</a>
+            </div>
+            
+        <div class="box">
+            <i class="fas fa-hotel"></i>
+            <h3>restaurant</h3>
+            <p>Dine in elegance and enjoy our signature dishes prepared by award-winning chefs.</p>
+            <a href="#" class="btn service-btn" data-service="restaurant">Learn More</a>
+            </div>
+
+        <div class="box">
+            <i class="fas fa-dumbbell"></i>
+            <h3>fitness center</h3>
+            <p>Stay fit and healthy with our state-of-the-art fitness center, equipped with modern exercise equipment and professional trainers.</p>
+            <a href="#" class="btn service-btn" data-service="fitness center">Learn More</a>
+            </div>
+
+        <div class="box">
+            <i class="fas fa-spa"></i>
+            <h3>beauty & spa</h3>
+            <p>Unwind and rejuvenate in our luxurious spa, offering a range of beauty treatments and wellness services.</p>
+            <a href="#" class="btn service-btn" data-service="beauty & spa">Learn More</a>
+            </div>
+
+        <div class="box">
+            <i class="fas fa-umbrella-beach"></i>
+            <h3>resort beach</h3>
+            <p>Enjoy the sun and sand at our beautiful resort beach, perfect for relaxation and water activities.</p>
+            <a href="#" class="btn service-btn" data-service="resort beach">Learn More</a>
+            </div>
+
+        <div class="box">
+            <i class="fas fa-concierge-bell"></i>
+            <h3>24/7 concierge</h3>
+            <p>Enjoy personalized service and assistance from our dedicated concierge team to make your stay memorable.</p>
+            <a href="#" class="btn service-btn" data-service="24/7 concierge">Learn More</a>
+            </div>
+
+        <div class="box">
+            <i class="fas fa-parking"></i>
+            <h3>valet parking</h3>
+            <p>Enjoy convenient and secure parking facilities for all our guests.</p>
+            <a href="#" class="btn service-btn" data-service="valet parking">Learn More</a>
+            </div>
+          </div>
+        </section>
+        <!--services section ends-->
+
+        <!-- gallery section starts -->
+        <section class="gallery" id="gallery">
+            <h1 class="heading"> our <span>gallery</span> </h1>
+
+            <div class="swiper gallery-slider">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide slide">
+                        <img src="images/gallery1.jpg" alt="">
+                        <i class="fas fa-magnifying-glass-plus icon"></i>
+                    </div>
+                    <div class="swiper-slide slide">
+                        <img src="images/gallery2.jpg" alt="">
+                        <i class="fas fa-magnifying-glass-plus icon"></i>
+                    </div>
+                    <div class="swiper-slide slide">
+                        <img src="images/gallery3.jpg" alt="">
+                        <i class="fas fa-magnifying-glass-plus icon"></i>
+                    </div>
+                    <div class="swiper-slide slide">
+                        <img src="images/gallery4.jpg" alt="">
+                        <i class="fas fa-magnifying-glass-plus icon"></i>
+                    </div>
+                    <div class="swiper-slide slide">
+                        <img src="images/gallery5.jpg" alt="">
+                        <i class="fas fa-magnifying-glass-plus icon"></i>
+                    </div>
+                    <div class="swiper-slide slide">
+                        <img src="images/gallery6.jpg" alt="">
+                        <i class="fas fa-magnifying-glass-plus icon"></i>
+                    </div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </section>
+        <!--gallery section ends-->
+
+        <!-- review section starts -->
+        <section class="review" id="review">
+
+    <div class="swiper review-slider">
+
+        <div class="swiper-wrapper">
+
+        <div class="swiper-slide slide">
+            <h2 class="heading"> client's <span>review</span></h2>
+            <i class="fas fa-quote-right"></i>
+            <p>The hotel exceeded all my expectations! The rooms were immaculate, the staff was incredibly friendly, and the amenities were top-notch. I especially loved the spa treatments and the delicious breakfast options.</p>
+            <div class="user">
+                <img src="images/pic-1.png" alt="">
+                <div class="user-info">
+                    <h3>Jeff</h3>
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="swiper-slide slide">
+            <h2 class="heading"> client's <span>review</span></h2>
+            <i class="fas fa-quote-right"></i>
+            <p>What a fantastic experience! The location is perfect, right by the beach, and the hotel's design is stunning. The concierge was very helpful in arranging activities, and the food at the restaurant was outstanding.</p>
+            <div class="user">
+                <img src="images/pic-2.png" alt="">
+                <div class="user-info">
+                    <h3>Karen</h3>
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="swiper-slide slide">
+            <h2 class="heading"> client's <span>review</span></h2>
+            <i class="fas fa-quote-right"></i>
+            <p>I had an amazing time at Dubai Hotel. The rooms are spacious and well-equipped, and the pool area is gorgeous. The staff made sure everything was perfect for our family vacation. Highly recommend!</p>
+            <div class="user">
+                <img src="images/pic-3.png" alt="">
+                <div class="user-info">
+                    <h3>Dion</h3>
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="swiper-slide slide">
+            <h2 class="heading"> client's <span>review</span></h2>
+            <i class="fas fa-quote-right"></i>
+            <p>The service here is unparalleled. From check-in to check-out, everything was smooth and professional. The gym facilities are excellent, and the complimentary breakfast was a great start to each day.</p>
+            <div class="user">
+                <img src="images/pic-4.png" alt="">
+                <div class="user-info">
+                    <h3>Pookie</h3>
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="swiper-slide slide">
+            <h2 class="heading"> client's <span>review</span></h2>
+            <i class="fas fa-quote-right"></i>
+            <p>This hotel is a gem! The attention to detail in the decor and the quality of the amenities really stood out. The beachfront location is ideal for relaxation, and the staff's knowledge of local attractions was invaluable.</p>
+            <div class="user">
+                <img src="images/pic-5.png" alt="">
+                <div class="user-info">
+                    <h3>Murray</h3>
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="swiper-slide slide">
+            <h2 class="heading"> client's <span>review</span></h2>
+            <i class="fas fa-quote-right"></i>
+            <p>Perfect for a business trip or leisure. The Wi-Fi was fast, the rooms were quiet, and the proximity to the city center made it easy to explore. The hotel's commitment to sustainability is also appreciated.</p>
+            <div class="user">
+                <img src="images/pic-6.png" alt="">
+                <div class="user-info">
+                    <h3>Precious</h3>
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class ="swiper-pagination"></div>
+
+</div>
+
+</section>
+<!-- review section ends -->
+
+<!-- faq section starts -->
+ <section class="faqs" id="faq">
+
+<h1 class="heading">frequently <span>asked</span> questions</h1>
+<div class="row">
+    <!--faq section-->
+    <div class="faq-search">
+        <input type="text" placeholder="Search questions..." />
+    </div>
+    <div class="faq-container">
+        <div class="faq">
+            <h3>Is there cancellation fee?</h3>
+            <p>Yes, there is a cancellation fee of 10% of the total booking amount for cancellations made within 24 hours of booking. Cancellations made more than 24 hours before check-in are free of charge.</p>
+        </div>
+        <div class="faq">
+            <h3>What payment methods do you accept?</h3>
+            <p>We accept all major credit cards, including Visa, MasterCard, and American Express. We also support payments via PayPal and bank transfers.</p>
+        </div>
+        <div class="faq">
+            <h3>What is the check-in and check-out time?</h3>
+            <p>Check-in is from 3:00 PM, and check-out is until 12:00 PM. Early check-in and late check-out may be available upon request, subject to availability.</p>
+        </div>
+        <div class="faq">
+            <h3>Do you offer airport shuttle service?</h3>
+            <p>Yes, we provide airport shuttle service for our guests. Please contact our concierge team in advance to arrange transportation.</p>
+        </div>
+        <div class="faq">
+            <h3>Is there a fitness center on-site?</h3>
+            <p>Yes, our hotel features a state-of-the-art fitness center equipped with modern exercise equipment for our guests to stay active during their stay.</p>
+        </div>
+        <div class="faq">
+            <h3>Is breakfast included in the room rate?</h3>
+            <p>Yes, breakfast is included in the room rate for all our guests. You can enjoy a delicious breakfast in our elegant restaurant.</p>
+        </div>
+        <div class="faq">
+            <h3>How do I get breakfast?</h3>
+            <p>Breakfast is served daily from 7:00 AM to 10:00 AM in the dining area and comes free with every room stay.</p>
+        </div>
+        <div class="faq">
+            <h3>Is there a swimming pool available for guests?</h3>
+            <p>Yes, we have a luxurious swimming pool where guests can relax and enjoy the beautiful surroundings.</p>
+        </div>
+         <div class="faq">
+            <h3>Do you offer room service?</h3>
+            <p>Yes, we provide 24/7 room service for our guests. You can enjoy delicious meals and beverages in the comfort of your room.</p>
+        </div>
+    </div>
+    <div class="contact-form">
+    <h3 class="sub-heading">Contact Us</h3>
+    <form action="" method="POST">
+    <div class="input-box">
+    <input type="text" name="fullName" placeholder="Full Name" required>
+    </div>
+    <div class="input-box">
+    <input type="email" name="email" placeholder="Email Address" required>
+    </div>
+    <div class="input-box">
+    <input type="tel" name="phone" placeholder="Phone Number" required>
+    </div>
+    <div class="input-box">
+        <select required>
+        <option value=""disabled selected>Subject</option>
+        <option value="booking">Booking Inquiry</option>
+        <option value="support">Customer Support</option>
+        <option value="feedback">Feedback</option>
+        <option value="other">Other</option>
+        </select>
+    </div>
+    <div class="input-box">
+        <textarea  placeholder="Your Message" required></textarea>
+    </div>
+    <button type="submit" class="btn">Send Message</button>
+    </form>
+    </div>
+</div>
+</section>
+ <!--faq section ends-->
+
+ <!--reservation starts-->
+ <section class="reservation" id="reservation">
+
+    <h1 class="heading">book <span>now</span></h1>
+
+    <form id="bookingForm">
+
+        <div class="container">
+
+            <div class="box">
+                <p>name <span>*</span></p>
+                <input type="text" name="name" id="bookName" class="input" placeholder="Your name" required>
+            </div>
+
+            <div class="box">
+                <p>email <span>*</span></p>
+                <input type="email" name="email" id="bookEmail" class="input" placeholder="Your email" required>
+            </div>
+
+            <div class="box">
+                <p>phone <span>*</span></p>
+                <input type="tel" name="phone" id="bookPhone" class="input" placeholder="Your phone" required>
+            </div>
+
+            <div class="box">
+                <p>check in <span>*</span></p>
+                <input type="date" name="checkInDate" id="bookCheckIn" class="input" required>
+            </div>
+
+            <div class="box">
+                <p>check out <span>*</span></p>
+                <input type="date" name="checkOutDate" id="bookCheckOut" class="input" required>
+            </div>
+
+            
+            <div class="box">
+                <p>adults <span>*</span></p>
+                <select name="adults" id="bookAdults" class="input" required>
+                <option value="1">1 adult</option>
+                <option value="2">2 adults</option>
+                <option value="3">3 adults</option>
+                <option value="4">4 adults</option>
+                <option value="5">5 adults</option>
+                <option value="6">6 adults</option>
+                </select>
+        </div>
+
+            <div class="box">
+                <p>children <span>*</span></p>
+                <select name="children" id="bookChildren" class="input">
+                <option value="0">0 children</option>
+                <option value="1">1 child</option>
+                <option value="2">2 children</option>
+                <option value="3">3 children</option>
+                <option value="4">4 children</option>
+                <option value="5">5 children</option>
+                <option value="6">6 children</option>
+                </select>
+        </div>
+
+            <div class="box">
+                <p>room selection <span>*</span></p>
+                <div class="room-selection-container">
+                    <div class="room-quantity-item" data-room="Standard Room" data-price="4500">
+                        <div class="room-info">
+                            <span class="room-name">Standard Room</span>
+                            <span class="room-price">Ksh 4,500/night</span>
+                        </div>
+                        <div class="quantity-controls">
+                            <button type="button" class="qty-btn qty-minus" onclick="changeQuantity('Standard Room', -1)">-</button>
+                            <input type="number" class="qty-input" id="qty-Standard Room" value="0" min="0" max="10" readonly>
+                            <button type="button" class="qty-btn qty-plus" onclick="changeQuantity('Standard Room', 1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="room-quantity-item" data-room="Deluxe Room" data-price="7000">
+                        <div class="room-info">
+                            <span class="room-name">Deluxe Room</span>
+                            <span class="room-price">Ksh 7,000/night</span>
+                        </div>
+                        <div class="quantity-controls">
+                            <button type="button" class="qty-btn qty-minus" onclick="changeQuantity('Deluxe Room', -1)">-</button>
+                            <input type="number" class="qty-input" id="qty-Deluxe Room" value="0" min="0" max="10" readonly>
+                            <button type="button" class="qty-btn qty-plus" onclick="changeQuantity('Deluxe Room', 1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="room-quantity-item" data-room="Suite" data-price="12000">
+                        <div class="room-info">
+                            <span class="room-name">Suite</span>
+                            <span class="room-price">Ksh 12,000/night</span>
+                        </div>
+                        <div class="quantity-controls">
+                            <button type="button" class="qty-btn qty-minus" onclick="changeQuantity('Suite', -1)">-</button>
+                            <input type="number" class="qty-input" id="qty-Suite" value="0" min="0" max="10" readonly>
+                            <button type="button" class="qty-btn qty-plus" onclick="changeQuantity('Suite', 1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="room-quantity-item" data-room="Presidential Suite" data-price="35000">
+                        <div class="room-info">
+                            <span class="room-name">Presidential Suite</span>
+                            <span class="room-price">Ksh 35,000/night</span>
+                        </div>
+                        <div class="quantity-controls">
+                            <button type="button" class="qty-btn qty-minus" onclick="changeQuantity('Presidential Suite', -1)">-</button>
+                            <input type="number" class="qty-input" id="qty-Presidential Suite" value="0" min="0" max="10" readonly>
+                            <button type="button" class="qty-btn qty-plus" onclick="changeQuantity('Presidential Suite', 1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="room-quantity-item" data-room="Ocean View Room" data-price="9000">
+                        <div class="room-info">
+                            <span class="room-name">Ocean View Room</span>
+                            <span class="room-price">Ksh 9,000/night</span>
+                        </div>
+                        <div class="quantity-controls">
+                            <button type="button" class="qty-btn qty-minus" onclick="changeQuantity('Ocean View Room', -1)">-</button>
+                            <input type="number" class="qty-input" id="qty-Ocean View Room" value="0" min="0" max="10" readonly>
+                            <button type="button" class="qty-btn qty-plus" onclick="changeQuantity('Ocean View Room', 1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="room-quantity-item" data-room="City View Room" data-price="6500">
+                        <div class="room-info">
+                            <span class="room-name">City View Room</span>
+                            <span class="room-price">Ksh 6,500/night</span>
+                        </div>
+                        <div class="quantity-controls">
+                            <button type="button" class="qty-btn qty-minus" onclick="changeQuantity('City View Room', -1)">-</button>
+                            <input type="number" class="qty-input" id="qty-City View Room" value="0" min="0" max="10" readonly>
+                            <button type="button" class="qty-btn qty-plus" onclick="changeQuantity('City View Room', 1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="room-quantity-item" data-room="Family Room" data-price="10500">
+                        <div class="room-info">
+                            <span class="room-name">Family Room</span>
+                            <span class="room-price">Ksh 10,500/night</span>
+                        </div>
+                        <div class="quantity-controls">
+                            <button type="button" class="qty-btn qty-minus" onclick="changeQuantity('Family Room', -1)">-</button>
+                            <input type="number" class="qty-input" id="qty-Family Room" value="0" min="0" max="10" readonly>
+                            <button type="button" class="qty-btn qty-plus" onclick="changeQuantity('Family Room', 1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="room-quantity-item" data-room="Executive Room" data-price="8500">
+                        <div class="room-info">
+                            <span class="room-name">Executive Room</span>
+                            <span class="room-price">Ksh 8,500/night</span>
+                        </div>
+                        <div class="quantity-controls">
+                            <button type="button" class="qty-btn qty-minus" onclick="changeQuantity('Executive Room', -1)">-</button>
+                            <input type="number" class="qty-input" id="qty-Executive Room" value="0" min="0" max="10" readonly>
+                            <button type="button" class="qty-btn qty-plus" onclick="changeQuantity('Executive Room', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <div class="box">
+            <p>total price</p>
+            <div class="total-price-display" id="totalPrice">Ksh 0 per night</div>
+        </div>
+
+        <div class="box">
+            <p>selected rooms</p>
+            <div class="selected-rooms-list" id="selectedRoomsList">
+                <div class="no-rooms-selected">No rooms selected</div>
+            </div>
+        </div>
+        </div>
+        <input type="submit" value="Book Now via WhatsApp" class="btn">
+    </form>
+
+</section>
+<!--reservation ends-->
+
+
+
+<!-- footer section starts -->
+<section class="footer">
+    <div class="box-container">
+        <div class="box">
+            <h3 class="brand-name">Dubai Hotel</h3>
+            <p class="info-text">Experience luxury and comfort at its finest. Subscribe to our newsletter for exclusive offers and updates.</p>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Enter your email">
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
+
+        <div class="box">
+            <h3>contact info</h3>
+            <a href="#"><i class="fas fa-phone"></i>+254-534-8765</a>
+            <a href="#"><i class="fas fa-phone"></i>+254-712-345-678</a>
+            <a href="#"><i class="fas fa-envelope"></i>dubaihotel@example.com</a>
+            <a href="#"><i class="fas fa-map-marker-alt"></i>123 Embu town, Embu, Kenya</a>
+            <div class="share">
+                <a href="#" class="fab fa-facebook-f"></a>
+                <a href="#" class="fab fa-twitter"></a>
+                <a href="#" class="fab fa-instagram"></a>
+                <a href="#" class="fab fa-tiktok"></a>
+            </div>
+        </div>
+         <div class="box">
+            <h3>quick links</h3>
+            <a href="#"><i class="fas fa-arrow-right"></i>Home</a>
+            <a href="#"><i class="fas fa-arrow-right"></i>About</a>
+            <a href="#"><i class="fas fa-arrow-right"></i>Rooms</a>
+            <a href="#"><i class="fas fa-arrow-right"></i>Gallery</a>
+            <a href="#"><i class="fas fa-arrow-right"></i>Facilities</a>
+            <a href="#location"><i class="fas fa-arrow-right"></i>Location</a>
+            <a href="#"><i class="fas fa-arrow-right"></i>Contact Us</a>
+    
+            </div>
+              <div class="box">
+            <h3>Extra links</h3>
+            <a href="#"><i class="fas fa-arrow-right"></i>Refund Policy</a>
+            <a href="#"><i class="fas fa-arrow-right"></i>Terms & Conditions</a>
+            <a href="#"><i class="fas fa-arrow-right"></i>Privacy Policy</a>
+            <a href="#"><i class="fas fa-arrow-right"></i>FAQs</a>
+            <a href="#"><i class="fas fa-arrow-right"></i>Careers</a>
+            <a href="#"><i class="fas fa-arrow-right"></i>Site Map</a>
+    
+            </div>
+    </div>
+    <div class="credit">created by <span>Project presidents</span> | all rights reserved</div>
+</section>
+
+<!-- popup image -->
+<div class="popup-image">
+    <div class="popup-header">
+        <span class="image-count">1 / 6</span>
+        <span class="close-btn">&times;</span>
+    </div>
+    <button class="prev-btn">&#10094;</button>
+    <button class="next-btn">&#10095;</button>
+    <img src="" alt="">
+</div>
+
+<!-- ✅ WhatsApp Floating Button -->
+<div class="whatsapp-float">
+    <div class="whatsapp-float-row">
+        <span class="whatsapp-tooltip">Chat with us on WhatsApp</span>
+        <a href="https://wa.me/254759484217?text=Hello%20Dubai%20Hotel%2C%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" title="Chat on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
+</div>
+
+<!-- ✅ Chat Assistant Floating Button & Widget -->
+<button class="chat-assistant-float" id="chatToggleBtn" title="Chat with our AI Assistant">
+    <i class="fas fa-comments"></i>
+</button>
+
+<!-- Chat Widget Modal -->
+<div id="chatWidget" class="chat-widget">
+    <div class="chat-widget-header">
+        <h3>Dubai Hotel AI Assistant</h3>
+        <button id="chatCloseBtn" class="chat-close-btn">&times;</button>
+    </div>
+    <div class="chat-widget-messages" id="chatMessages"></div>
+    <div class="chat-widget-input-area">
+        <input type="text" id="chatInput" placeholder="Ask about rooms, services, prices..." class="chat-input">
+        <button id="chatSendBtn" class="chat-send-btn"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<style>
+    .chat-assistant-float {
+        position: fixed;
+        bottom: 110px;
+        right: 30px;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        border-radius: 50%;
+        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.5);
+        color: white;
+        font-size: 1.8rem;
+        transition: all 0.3s ease;
+        animation: chat-pulse 2s infinite;
+        border: none;
+        cursor: pointer;
+    }
+
+    .chat-assistant-float:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 28px rgba(99, 102, 241, 0.7);
+        background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    }
+
+    @keyframes chat-pulse {
+        0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.6); }
+        70% { box-shadow: 0 0 0 15px rgba(99, 102, 241, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+    }
+
+    /* Chat Widget Styles */
+    .chat-widget {
+        position: fixed;
+        bottom: 90px;
+        right: 30px;
+        width: 380px;
+        height: 500px;
+        background: #0e0d0b;
+        border-radius: 12px;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        z-index: 9998;
+        display: none;
+        flex-direction: column;
+        border: 1px solid #c9a96e;
+        overflow: hidden;
+    }
+
+    .chat-widget.active {
+        display: flex;
+    }
+
+    .chat-widget-header {
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        color: white;
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chat-widget-header h3 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 600;
+    }
+
+    .chat-close-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .chat-close-btn:hover {
+        opacity: 0.8;
+    }
+
+    .chat-widget-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .chat-message {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .chat-message.user {
+        justify-content: flex-end;
+    }
+
+    .chat-message-content {
+        max-width: 85%;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        line-height: 1.4;
+        word-wrap: break-word;
+    }
+
+    .chat-message.bot .chat-message-content {
+        background: #1e1c17;
+        color: #e8e6e1;
+        border-left: 3px solid #c9a96e;
+    }
+
+    .chat-message.user .chat-message-content {
+        background: #6366f1;
+        color: white;
+        border-radius: 8px;
+    }
+
+    .chat-widget-input-area {
+        padding: 12px;
+        background: #1a1814;
+        border-top: 1px solid #c9a96e;
+        display: flex;
+        gap: 8px;
+    }
+
+    .chat-input {
+        flex: 1;
+        background: #252219;
+        border: 1px solid #c9a96e;
+        color: #e8e6e1;
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .chat-input::placeholder {
+        color: #8b7f72;
+    }
+
+    .chat-input:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+    }
+
+    .chat-send-btn {
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        color: white;
+        border: none;
+        padding: 10px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+
+    .chat-send-btn:hover {
+        transform: scale(1.05);
+    }
+
+    @media (max-width: 512px) {
+        .chat-widget {
+            width: calc(100vw - 20px);
+            height: 400px;
+        }
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+<script src="script.js"></script>
+
+<!-- Chat Widget Script -->
+<script>
+    const chatToggleBtn = document.getElementById('chatToggleBtn');
+    const chatCloseBtn = document.getElementById('chatCloseBtn');
+    const chatWidget = document.getElementById('chatWidget');
+    const chatInput = document.getElementById('chatInput');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+    const chatMessages = document.getElementById('chatMessages');
+
+    // Chat Knowledge Base
+    const KB = {
+        hotel: {
+            name: 'Dubai Hotel',
+            tagline: 'Global Elegance, Exceptional Hospitality & Sustainable Luxury.',
+            location: '123 Embu town, Embu, Kenya',
+            phones: ['+254-534-8765', '+254-712-345-678'],
+            email: 'dubaihotel@example.com',
+            philosophy: ['Global Elegance', 'Exceptional Hospitality', 'Sustainable Luxury']
+        },
+        rooms: [
+            { name: 'Standard Room', price: 4500 },
+            { name: 'Deluxe Room', price: 7000 },
+            { name: 'Suite', price: 12000 },
+            { name: 'Presidential Suite', price: 35000 },
+            { name: 'Ocean View Room', price: 9000 },
+            { name: 'City View Room', price: 6500 },
+            { name: 'Family Room', price: 10500 },
+            { name: 'Executive Room', price: 8500 }
+        ],
+        services: ['Swimming Pool', 'Food & Drinks', 'Restaurant', 'Fitness Center', 'Beauty & Spa', 'Resort Beach', '24/7 Concierge', 'Valet Parking'],
+        gallery: { count: 6, description: 'We have a beautiful gallery showcasing 6 stunning images of our hotel.' },
+        reviews: { count: 6, description: 'Our guests love us! We have 6 wonderful reviews from satisfied customers.' },
+        faqs: {
+            'cancellation': 'We have a 10% cancellation fee if cancelled within 24 hours of booking.',
+            'payment': 'We accept Visa, MasterCard, American Express, PayPal, Mpesa, and bank transfers.',
+            'checkin': 'Check-in is at 3:00 PM and check-out is at 12:00 PM.',
+            'airport': 'Yes, we offer airport shuttle service. Please contact concierge in advance.',
+            'breakfast': 'Yes, breakfast is included in your room rate, served 7:00-10:00 AM.',
+            'parking': 'Yes, free valet parking is available for all guests.',
+            'booking': 'To book a room, please provide your check-in and check-out dates, number of guests, and preferred room type at the booking section.',
+            'swimming': 'Enjoy a refreshing swim in our luxurious swimming pool, surrounded by stunning views and elegant design.',
+            'restaurant': 'Dine in elegance and enjoy our signature dishes prepared by award-winning chefs.',
+            'fitness': 'Stay fit and healthy with our state-of-the-art fitness center, equipped with modern exercise equipment and professional trainers.',
+            'spa': 'Unwind and rejuvenate in our luxurious spa, offering a range of beauty treatments and wellness services.',
+            'beach': 'Enjoy the sun and sand at our beautiful resort beach, perfect for relaxation and water activities.',
+            'concierge': 'Enjoy personalized service and assistance from our dedicated concierge team to make your stay memorable.',
+            'valet': 'Enjoy convenient and secure parking facilities for all our guests.',
+            default: 'I can help with information about our hotel, rooms, services, policies, and more. What would you like to know?'
+        }
+    };
+
+    // Toggle Chat Widget
+    chatToggleBtn.addEventListener('click', () => {
+        chatWidget.classList.toggle('active');
+        if (chatWidget.classList.contains('active')) {
+            chatInput.focus();
+            if (chatMessages.children.length === 0) {
+                addBotMessage('Hello! 👋 I\'m here to help. Ask me about our hotel, rooms, services, location, contact info, or any questions!');
+            }
+        }
+    });
+
+    chatCloseBtn.addEventListener('click', () => {
+        chatWidget.classList.remove('active');
+    });
+
+    // Send Message
+    chatSendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        addUserMessage(message);
+        chatInput.value = '';
+
+        setTimeout(() => {
+            const response = generateResponse(message);
+            addBotMessage(response);
+        }, 500);
+    }
+
+    function addUserMessage(text) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-message user';
+        msgDiv.innerHTML = `<div class="chat-message-content">${text}</div>`;
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function addBotMessage(text) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-message bot';
+        msgDiv.innerHTML = `<div class="chat-message-content">${text}</div>`;
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function generateResponse(query) {
+        const q = query.toLowerCase().trim();
+
+        // Single word clues
+        if (q === 'about' || q === 'hotel') {
+            return `🏨 **${KB.hotel.name}**\n${KB.hotel.tagline}\n\n📍 **Location:** ${KB.hotel.location}\n📞 **Phones:** ${KB.hotel.phones.join(', ')}\n📧 **Email:** ${KB.hotel.email}\n\n**Our Philosophy:**\n• ${KB.hotel.philosophy.join('\n• ')}`;
+        }
+
+        if (q === 'rooms') {
+            let response = '🏠 Our Rooms:\n\n';
+            KB.rooms.forEach(r => {
+                response += `• ${r.name}: Ksh ${r.price.toLocaleString()}/night\n`;
+            });
+            return response;
+        }
+
+        if (q === 'services' || q === 'facilities') {
+            return `🏨 We offer:\n• ${KB.services.join('\n• ')}`;
+        }
+
+        if (q === 'gallery') {
+            return `📸 ${KB.gallery.description}`;
+        }
+
+        if (q === 'reviews' || q === 'testimonials') {
+            return `⭐ ${KB.reviews.description}`;
+        }
+
+        if (q === 'faq' || q === 'faqs') {
+            return '❓ We have answers to frequently asked questions like cancellation, payment, check-in/out, airport shuttle, breakfast, parking, and more. Ask me a specific question!';
+        }
+
+        if (q === 'location' || q === 'address') {
+            return `📍 Our location: ${KB.hotel.location}`;
+        }
+
+        if (q === 'contact' || q === 'phone' || q === 'email') {
+            return `📞 Phones: ${KB.hotel.phones.join(', ')}\n📧 Email: ${KB.hotel.email}`;
+        }
+
+        if (q === 'philosophy') {
+            return `🌟 Our Philosophy:\n• ${KB.hotel.philosophy.join('\n• ')}`;
+        }
+
+        // Specific services
+        if (q.includes('swimming') || q.includes('pool')) {
+            return `🏊 ${KB.faqs.swimming}`;
+        }
+
+        if (q.includes('restaurant') || q.includes('food') || q.includes('drink')) {
+            return `🍽️ ${KB.faqs.restaurant}`;
+        }
+
+        if (q.includes('fitness') || q.includes('gym')) {
+            return `💪 ${KB.faqs.fitness}`;
+        }
+
+        if (q.includes('spa') || q.includes('beauty')) {
+            return `🧖 ${KB.faqs.spa}`;
+        }
+
+        if (q.includes('beach') || q.includes('resort')) {
+            return `🏖️ ${KB.faqs.beach}`;
+        }
+
+        if (q.includes('concierge')) {
+            return `🛎️ ${KB.faqs.concierge}`;
+        }
+
+        if (q.includes('valet') || q.includes('parking')) {
+            return `🚗 ${KB.faqs.parking}`;
+        }
+
+        // Room prices
+        if (q.includes('price') || q.includes('cost') || q.includes('rate')) {
+            let response = '💰 Our room prices:\n\n';
+            KB.rooms.forEach(r => {
+                response += `• ${r.name}: Ksh ${r.price.toLocaleString()}/night\n`;
+            });
+            return response;
+        }
+
+        // Cancellation
+        if (q.includes('cancel')) {
+            return `❌ ${KB.faqs.cancellation}`;
+        }
+
+        // Payment
+        if (q.includes('payment') || q.includes('pay')) {
+            return `💳 ${KB.faqs.payment}`;
+        }
+
+        // Check-in/out
+        if (q.includes('check-in') || q.includes('checkin') || q.includes('check-out') || q.includes('checkout')) {
+            return `🗝️ ${KB.faqs.checkin}`;
+        }
+
+        // Airport
+        if (q.includes('airport') || q.includes('shuttle')) {
+            return `✈️ ${KB.faqs.airport}`;
+        }
+
+        // Breakfast
+        if (q.includes('breakfast') || q.includes('eat')) {
+            return `🍳 ${KB.faqs.breakfast}`;
+        }
+
+        // Booking
+        if (q.includes('book') || q.includes('reservation')) {
+            return `📅 ${KB.faqs.booking}`;
+        }
+
+        // Default
+        return '😊 I can help with information about our hotel, rooms, services, policies, and more. Try asking about "rooms", "services", "about", "location", or specific questions like "what is check-in time?"';
+    }
+</script>
+
+<script>
+    const WHATSAPP_NUMBER = '254759484217';
+
+    // Quantity change function
+    function changeQuantity(roomName, change) {
+        const input = document.getElementById(`qty-${roomName}`);
+        let currentValue = parseInt(input.value) || 0;
+        let newValue = currentValue + change;
+
+        // Ensure value stays within bounds
+        if (newValue < 0) newValue = 0;
+        if (newValue > 10) newValue = 10;
+
+        input.value = newValue;
+        calculateTotalPrice();
+    }
+
+    // Price calculation for room quantities
+    function calculateTotalPrice() {
+        let total = 0;
+        const selectedRoomsList = document.getElementById('selectedRoomsList');
+
+        // Clear current list
+        selectedRoomsList.innerHTML = '';
+
+        // Get all room quantity items
+        const roomItems = document.querySelectorAll('.room-quantity-item');
+        let hasSelections = false;
+
+        roomItems.forEach(item => {
+            const roomName = item.dataset.room;
+            const price = parseInt(item.dataset.price);
+            const quantity = parseInt(document.getElementById(`qty-${roomName}`).value) || 0;
+
+            if (quantity > 0) {
+                hasSelections = true;
+                total += price * quantity;
+
+                // Create room item element
+                const roomItem = document.createElement('div');
+                roomItem.className = 'selected-room-item';
+
+                roomItem.innerHTML = `
+                    <span class="selected-room-name">${roomName} × ${quantity}</span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="selected-room-price">Ksh ${(price * quantity).toLocaleString()}</span>
+                        <button class="remove-room-btn" onclick="clearRoom('${roomName}')">×</button>
+                    </div>
+                `;
+
+                selectedRoomsList.appendChild(roomItem);
+            }
+        });
+
+        if (!hasSelections) {
+            selectedRoomsList.innerHTML = '<div class="no-rooms-selected">No rooms selected</div>';
+        }
+
+        const formattedTotal = total.toLocaleString();
+        document.getElementById('totalPrice').textContent = total > 0 ? 'Ksh ' + formattedTotal + ' per night' : 'Ksh 0 per night';
+    }
+
+    // Function to clear a room selection (set quantity to 0)
+    function clearRoom(roomName) {
+        document.getElementById(`qty-${roomName}`).value = '0';
+        calculateTotalPrice();
+    }
+
+    // Book room directly from room card
+    function bookRoomWhatsApp(roomName, price) {
+        const message = `Hello Dubai Hotel! 🏨\n\nI'm interested in booking the *${roomName}* at *${price}*.\n\nPlease let me know the availability and next steps. Thank you!`;
+        const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+    }
+
+    // Handle booking form submission → send to WhatsApp
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('bookName').value;
+        const email = document.getElementById('bookEmail').value;
+        const phone = document.getElementById('bookPhone').value;
+        const checkIn = document.getElementById('bookCheckIn').value;
+        const checkOut = document.getElementById('bookCheckOut').value;
+        const adults = document.getElementById('bookAdults').value;
+        const children = document.getElementById('bookChildren').value;
+
+        // Get selected room types and quantities with detailed breakdown
+        const selectedRooms = [];
+        const roomBreakdown = [];
+        const roomItems = document.querySelectorAll('.room-quantity-item');
+        let totalRooms = 0;
+
+        roomItems.forEach(item => {
+            const roomName = item.dataset.room;
+            const price = parseInt(item.dataset.price);
+            const quantity = parseInt(document.getElementById(`qty-${roomName}`).value) || 0;
+
+            if (quantity > 0) {
+                selectedRooms.push(`${quantity} × ${roomName}`);
+                const subtotal = price * quantity;
+                roomBreakdown.push(`• ${roomName} × ${quantity} = Ksh ${subtotal.toLocaleString()}`);
+                totalRooms += quantity;
+            }
+        });
+
+        const roomTypesText = selectedRooms.length > 0 ? selectedRooms.join(', ') : 'No rooms selected';
+        const roomListText = roomBreakdown.length > 0 ? roomBreakdown.join('\n') : 'No rooms selected';
+
+        // Calculate total price
+        let total = 0;
+        roomItems.forEach(item => {
+            const roomName = item.dataset.room;
+            const price = parseInt(item.dataset.price);
+            const quantity = parseInt(document.getElementById(`qty-${roomName}`).value) || 0;
+            total += price * quantity;
+        });
+        const formattedTotal = total.toLocaleString();
+
+        const message =
+`Hello Dubai Hotel! 🏨
+
+*NEW BOOKING REQUEST*
+
+👤 *Name:* ${name}
+📧 *Email:* ${email}
+📞 *Phone:* ${phone}
+
+🛏️ *ROOM SELECTION:*
+${roomListText}
+
+💰 *Total Price:* Ksh ${formattedTotal} per night
+
+🗓️ *Check-in:* ${checkIn}
+🗓️ *Check-out:* ${checkOut}
+👨‍👩‍👧 *Adults:* ${adults}
+👶 *Children:* ${children}
+🚪 *Total Rooms:* ${totalRooms}
+
+Please confirm my booking. Thank you!`;
+
+        const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+    });
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!-- font awesome cdn link  -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- swiper js cdn link -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+<!-- custom css link -->
+<link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+<script src="script.js"></script>
+
+about texts
+Discover the pinnacle of luxury and sophistication at **Hotelier**, where every detail is crafted to perfection. From the moment you arrive, our mission is to provide an experience that blends unparalleled elegance with personalized service.
+Hotelier blends timeless design with global influences to create an experience that transcends borders.
+Our dedicated team is committed to making every guest feel valued.
+Experience indulgence with a conscience. We prioritize eco-friendly practices.
+
+room texts
+Stay in comfort and style with our exclusive room. Perfect for relaxation and convenience.
+
+services texts
+Enjoy a refreshing dip in our luxurious swimming pool.
+Savor delicious cuisines and beverages crafted just for you.
+Dine in elegance at our on-site restaurant offering diverse menus.
+Stay active and healthy in our state-of-the-art fitness center.
+Relax and rejuvenate with our exclusive spa treatments.
+Unwind on the serene sands of our private resort beach.
+Experience top-tier hospitality with round-the-clock concierge services.
+Enjoy hassle-free parking with our professional valet service.
+
+review texts
+Absolutely exceptional stay! The attention to detail in service was remarkable. From the moment we arrived, the staff went above and beyond to ensure our comfort. The private beach access made our honeymoon truly unforgettable.
+
+faq's
+We accept all major credit cards including Visa, MasterCard, American Express, and Discover. We also accept digital payments through PayPal and direct bank transfers for group bookings.
+Our standard check-in time is 3:00 PM and check-out time is 11:00 AM. Early check-in and late check-out can be arranged based on availability for an additional fee.
+Yes, all our room rates include a complimentary breakfast buffet served at our main restaurant from 6:30 AM to 10:30 AM daily, featuring both continental and hot breakfast options.
+Yes, we provide airport pickup and drop-off services. Please contact our concierge at least 24 hours in advance to arrange your transfer and confirm the rates.
+Cancellations made 48 hours prior to check-in are free of charge. Late cancellations or no-shows may incur a fee equivalent to one night's stay.
+Yes, we provide airport pickup and drop-off services. Please contact our concierge at least 24 hours in advance to arrange your transfer and confirm the rates.
+Cancellations made 48 hours prior to check-in are free of charge. Late cancellations or no-shows may incur a fee equivalent to one night's stay.
+
+footer text
+Experience luxury and comfort at its finest. Subscribe to our newsletter for exclusive offers and updates.
+
